@@ -3,56 +3,40 @@ package com.sample;
 
 import java.util.*;
 import java.lang.*;
-import java.io.*;
 
-class pair {
-    public int n1, n2;
-
-    pair(int n1, int n2) {
-        this.n1 = n1;
-        this.n2 = n2;
-    }
-
-    public String toString() {
-        return (n1 + " " + n2);
-    }
-}
-
-class sortby implements Comparator<pair> {
-
-    public int compare(pair C1, pair C2) {
-        return (C1.n2 - C2.n2);
-    }
-}
-
+/**
+ * Here, the idea is to sort the meeting by endTime, pick first meeting and then compare next startTime with previously selected endTime
+ * if startTime > previously selected endTime
+ *  then take it
+ * else
+ *  compare with next meeting startTime
+ * <p>
+ * keep on doing this
+ */
 
 public class OneMeetingRoom {
     public static void main(String[] args) {
 
 
-        List<Integer> start = Arrays.asList(1, 3, 0, 5, 8, 5,10,11);
+        List<Integer> start = Arrays.asList(1, 3, 0, 5, 8, 5, 10, 11);
 
-        List<Integer> end = Arrays.asList(2, 4, 6, 7, 9, 9,15,16);
+        List<Integer> end = Arrays.asList(2, 4, 6, 7, 9, 9, 15, 16);
 
-        List<Integer> ret ;
+        List<Integer> ret;
 
-        ArrayList<pair> endpair = new ArrayList<pair>();
+        ArrayList<IndexEndTimPair> endIndexEndTimePair = new ArrayList<IndexEndTimPair>();
 
 
         for (int i = 0; i < end.size(); i++) {
-            pair p = new pair(i, end.get(i));
-            endpair.add(p);
+            IndexEndTimPair p = new IndexEndTimPair(i, end.get(i));
+            endIndexEndTimePair.add(p);
         }
 
-        Collections.sort(endpair, new sortby());
+        Collections.sort(endIndexEndTimePair, new SortByEndTime());
 
 
-        ret = meeting(start, endpair);
+        ret = meeting(start, endIndexEndTimePair);
 
-        //  for (int i = 0; i < n; i++){
-        //      // Spair p = new pair(i, end.get(i));
-        //      System.out.println(endpair.get(i));
-        //  }
 
         for (int i = 0; i < ret.size(); i++) {
             System.out.print(ret.get(i) + " ");
@@ -61,23 +45,40 @@ public class OneMeetingRoom {
         System.out.println();
     }
 
-    static List<Integer> meeting(List<Integer> start, List<pair> endpair) {
+    static List<Integer> meeting(List<Integer> start, List<IndexEndTimPair> endIndexEndTimePair) {
         int n = start.size();
 
-        ArrayList<Integer> arr = new ArrayList<Integer>();
+        ArrayList<Integer> arr = new ArrayList<>();
 
-        arr.add(endpair.get(0).n1 + 1);
-        // int
-        int end = endpair.get(0).n2;
+        arr.add(endIndexEndTimePair.get(0).index);
+        int end = endIndexEndTimePair.get(0).endTime;
         for (int i = 1; i < n; i++) {
-
-            // int nextIndex = endpair.get(i).n1;
-            if (start.get(endpair.get(i).n1) > end) {
-                arr.add(endpair.get(i).n1 + 1);
-                end = endpair.get(i).n2;
+            if (start.get(endIndexEndTimePair.get(i).index) > end) {
+                arr.add(endIndexEndTimePair.get(i).index);
+                end = endIndexEndTimePair.get(i).endTime;
             }
-            // int nextStart =
         }
         return (arr);
     }
 }
+
+class IndexEndTimPair {
+    public int index, endTime;
+
+    IndexEndTimPair(int index, int endTime) {
+        this.index = index;
+        this.endTime = endTime;
+    }
+
+    public String toString() {
+        return (index + " " + endTime);
+    }
+}
+
+class SortByEndTime implements Comparator<IndexEndTimPair> {
+
+    public int compare(IndexEndTimPair C1, IndexEndTimPair C2) {
+        return (C1.endTime - C2.endTime);
+    }
+}
+
